@@ -1,12 +1,16 @@
 #include <SoftwareSerial.h>
+#include <LiquidCrystal.h>
 #define REQUEST_DATA 'R'
 
 const int LIGHT_SENSOR = A0;
 const int LED = 9;
 const int BUZZER = 8;
-const int LIGHT_SENSOR_THRESHOLD = 250;
+const int LIGHT_SENSOR_THRESHOLD = 400;
 bool toggle = false;
-SoftwareSerial BT(10, 11);
+char line1[] = "";
+char line2[] = "";
+SoftwareSerial BT(2, 3);
+LiquidCrystal lcd(4, 6, 10, 11, 12, 13);
 
 void setup() {
   // put your setup code here, to run once:
@@ -17,6 +21,9 @@ void setup() {
   BT.println("U,9600,N");
   BT.begin(9600);
   Serial.begin(9600);
+
+  lcd.begin(16,2);
+  lcd.print("Hack Western 3");
 
   pinMode(LIGHT_SENSOR, INPUT);
   pinMode(LED, OUTPUT);
@@ -35,22 +42,21 @@ void loop() {
       toggle = true;
       BT.print('R');
       BT.print("\n");
-
-//      while(BT.available() <= 0);
-    
+      lcd.clear();
       while(BT.available() > 0) {
         char data = BT.read();
         Serial.print(data);
+        lcd.print(data);
       }
-  
+      lcd.setCursor(0,2);
+      lcd.print(" Confirmed");
       Serial.println();
     }
-
-    
   }
   else {
     digitalWrite(LED, 0);
-    digitalWrite(BUZZER, 0);    
+    digitalWrite(BUZZER, 0); 
+    
     toggle = false;
   }
 }
